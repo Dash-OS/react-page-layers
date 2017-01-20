@@ -21,6 +21,8 @@ other elements easily.
 yarn add react-page-layers
 ```
 
+**OR**
+
 ```bash
 npm install --save react-page-layers
 ```

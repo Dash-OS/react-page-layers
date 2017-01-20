@@ -46,7 +46,7 @@ module.exports = {
         exclude: /node_modules/,
         options: {
           presets: [["es2015", { "modules": false }]],
-          plugins: ['transform-runtime']
+          plugins: ['transform-runtime', 'transform-class-properties']
         }
       }
     ]

@@ -1,5 +1,5 @@
 {
-  "name": "redux-page-layers",
+  "name": "react-page-layers",
   "version": "0.1.0",
   "description": "Manage Layers in React as an alternative to Portals.",
   "main": "dist/react-page-layer.js",
