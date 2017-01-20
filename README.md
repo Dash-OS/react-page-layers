@@ -1,5 +1,7 @@
 # react-page-layers
 
+[![npm version](https://badge.fury.io/js/react-page-layers.svg)](https://badge.fury.io/js/react-page-layers)
+
 While other libraries exist that provide portal like capabilities, I personally 
 had some issues with a few of them.  I wanted functionality to handle layers but 
 didn't like the idea of appending to the body of my DOM as I started to see 

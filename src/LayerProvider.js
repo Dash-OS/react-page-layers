@@ -1,14 +1,8 @@
 import React, { Component, PropTypes } from 'react'
 
 export default class PageLayerProvider extends Component {
-  layers = {}
-  children = {}
-  mounts = {}
-  visibility = {}
   
-  constructor(props) {
-    super(props)
-  }
+  layers = {}; children = {}; visibility = {}
   
   layerController = (action, props, context) => {
     const layerID = props.layerID || context.props.layerID
@@ -25,33 +19,27 @@ export default class PageLayerProvider extends Component {
         break
       }
     }
-    if ( this.layers[layerID] ) {
-      // Is there a more efficient way than force updating to update the parent?
-      this.layers[layerID].context.forceUpdate()
-    }
+    // Is there a more efficient way than force updating to update the parent?
+    this.layers[layerID] && ( this.layers[layerID].context.forceUpdate() )
   }
   
-  mountLayer = (id, context) => {
-    this.layers[id] = { context }
-  }
-  
-  unmountLayer = (id, context) => {
-    delete this.layers[id]
-  }
+  mountLayer   = (id, context) => ( this.layers[id] = { context } )
+  unmountLayer = (id, context) => delete this.layers[id]
   
   mountChild = (layerID, childID, context) => {
     this.children[layerID][childID] = context
-    if ( context.props.show ) { this.layerController('visibility', { visible: context.props.show }, context) }
+    context.props.show === true 
+      && ( this.layerController('visibility', { visible: true }, context) )
   }
   
   unmountChild = (layerID, childID, context) => {
     delete this.children[layerID][childID]
     if ( Object.keys(this.children[layerID]) === 0 ) { delete this.children[layerID] }
+    context.props.show === true 
+      && ( this.layerController('visibility', { visible: false }, context) )
   }
   
   handleRegistration = (type, state, context) => {
-    //console.log('Registering: ', type, state, context)
-    //if ( !  ) { throw new Error('Layers must have an ID: ', type, state, context) }
     type === 'layer'
       ? this.layerRegistration(state, context)
       : this.childRegistration(state, context)
@@ -62,16 +50,13 @@ export default class PageLayerProvider extends Component {
     if ( state === 'mount' && this.layers[layerID] !== undefined ) {
       throw new Error(`A Layer with ID: ${layerID} has already been registered.  Each Layer must have a unique ID!`)
     }
-    if ( state === 'mount' ) { 
-      this.mountLayer(layerID, context) 
-    } else if ( state === 'unmount' ) {
-      this.unmountLayer(layerID, context)
-    }
+    state === 'mount'
+      ? this.mountLayer(layerID, context) : this.unmountLayer(layerID, context)
   }
   
   childRegistration = (state, context) => {
-    const layerID = context.props.layerID
-    const childID = context.props.childID
+    const layerID = context.props.layerID, 
+          childID = context.props.childID
     if ( ! layerID || ! childID ) { throw new Error('Can Not Register a Child without both a Layer ID and Child ID') }
     if ( ! this.children[layerID] ) { this.children[layerID] = {} }
     const childContent =  this.children[layerID][childID]
@@ -88,27 +73,21 @@ export default class PageLayerProvider extends Component {
   
   getLayersContent = (context) => {
     const id = context.props.layerID
-    console.log(id, context, this)
     if ( Array.isArray(this.visibility[id]) && this.visibility[id].length > 0 ) {
-      const Children = this.visibility[id].map((childID, i) => {
-        const Component = this.children[id][childID].props.children
-        return Component
-      })
+      const Children = this.visibility[id].map( childID => this.children[id][childID].props.children )
       return <div>{Children}</div>
     } else { return null }
   }
   
-  getChildContext = () => {
-    return {
-      pageLayers: {
-        registry:   (...args) => this.handleRegistration(...args),
-        controller: (...args) => this.layerController(...args),
-        getLayerContent: (...args) => this.getLayersContent(...args)
-      }
+  getChildContext = () => ({
+    pageLayers: {
+      registry:        (...args) => this.handleRegistration(...args),
+      controller:      (...args) => this.layerController(...args),
+      getLayerContent: (...args) => this.getLayersContent(...args)
     }
-  }
+  })
   
-  render = () => React.Children.only(this.props.children)
+  render = () => this.props.children
 }
 
 PageLayerProvider.childContextTypes = {

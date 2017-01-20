@@ -1,8 +1,12 @@
 import React, { Component, PropTypes } from 'react'
 
 export default class Layer extends Component {
-  componentWillUnmount = () => this.context.pageLayers.registry('layer', 'unmount', this)
-  componentWillMount = () => this.context.pageLayers.registry('layer', 'mount', this)
+  componentWillUnmount = () => 
+    this.context.pageLayers.registry('layer', 'unmount', this)
+    
+  componentWillMount = () => 
+    this.context.pageLayers.registry('layer', 'mount', this)
+    
   render = () => this.context.pageLayers.getLayerContent(this)
 }
 
