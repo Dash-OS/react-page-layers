@@ -77,6 +77,7 @@ should not have any children (well, they will just be ignored).
 | Prop        | Type(s)           | Description  |
 | -------------   |:-------------:| ----- |
 | **layerID**     | string | Required unique id which is not shared with any other `<Layer />` in your app. |
+| **show**        | boolean | Optional boolean to hide/show the layers children |
 
 ### `<OnLayer />`
 

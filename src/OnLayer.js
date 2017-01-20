@@ -21,8 +21,7 @@ export default class OnLayer extends Component {
       this.context.pageLayers.registry('child', 'mount', {...this, props: np})
     })()
   }
-  
-  
+
   render = () => null
 }
 

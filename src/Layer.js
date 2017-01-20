@@ -6,12 +6,19 @@ export default class Layer extends Component {
     
   componentWillMount = () => 
     this.context.pageLayers.registry('layer', 'mount', this)
-    
-  render = () => this.context.pageLayers.getLayerContent(this)
+  
+  shouldComponentUpdate = np => np.show !== this.props.show
+
+  render = () => this.props.show === true 
+    ? this.context.pageLayers.getLayerContent(this)
+    : null
 }
 
+Layer.defaultProps = { show: true }
+
 Layer.propTypes = {
-  layerID: PropTypes.string.isRequired
+  layerID: PropTypes.string.isRequired,
+  show:    PropTypes.bool
 }
 
 Layer.contextTypes = {
