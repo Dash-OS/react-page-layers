@@ -1,6 +1,6 @@
 {
   "name": "react-page-layers",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "Manage Layers in React as an alternative to Portals.",
   "main": "dist/react-page-layer.js",
   "scripts": {

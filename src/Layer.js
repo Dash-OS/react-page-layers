@@ -1,11 +1,14 @@
 import React, { Component, PropTypes } from 'react'
 
 export default class Layer extends Component {
-  componentWillUnmount = () => 
+  componentWillUnmount = () =>
     this.context.pageLayers.registry('layer', 'unmount', this)
-    
-  componentWillMount = () => 
+  
+  componentDidMount = () => 
     this.context.pageLayers.registry('layer', 'mount', this)
+  
+  componentWillReceiveProps = np => np.show !== this.props.show
+      && this.context.pageLayers.registry('layer', np.show === true ? 'mount' : 'unmount', this)
   
   shouldComponentUpdate = np => np.show !== this.props.show
 
@@ -18,7 +21,7 @@ Layer.defaultProps = { show: true }
 
 Layer.propTypes = {
   layerID: PropTypes.string.isRequired,
-  show:    PropTypes.bool
+  show: PropTypes.bool
 }
 
 Layer.contextTypes = {

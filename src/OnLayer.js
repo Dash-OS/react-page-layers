@@ -4,7 +4,7 @@ export default class OnLayer extends Component {
   componentWillUnmount = () => 
     this.context.pageLayers.registry('child', 'unmount', this)
     
-  componentWillMount = () => 
+  componentDidMount = () => 
     this.context.pageLayers.registry('child', 'mount', this)
     
   setLayerVisibility = props => 
@@ -21,7 +21,7 @@ export default class OnLayer extends Component {
       this.context.pageLayers.registry('child', 'mount', {...this, props: np})
     })()
   }
-
+  
   render = () => null
 }
 

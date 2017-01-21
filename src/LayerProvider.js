@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 
 export default class PageLayerProvider extends Component {
   
-  layers = {}; children = {}; visibility = {}
+  layers = {}; childLayers = {}; visibility = {}
   
   layerController = (action, props, context) => {
     const layerID = props.layerID || context.props.layerID
@@ -20,21 +20,27 @@ export default class PageLayerProvider extends Component {
       }
     }
     // Is there a more efficient way than force updating to update the parent?
-    this.layers[layerID] && ( this.layers[layerID].context.forceUpdate() )
+    this.updateLayer(layerID)
   }
   
-  mountLayer   = (id, context) => ( this.layers[id] = { context } )
-  unmountLayer = (id, context) => delete this.layers[id]
+  mountLayer = (id, context) => {
+    this.layers[id] = { context } 
+    Array.isArray(this.visibility[id]) && ( context.forceUpdate() )
+  }
+  
+  unmountLayer = (id, context) => ( delete this.layers[id] )
   
   mountChild = (layerID, childID, context) => {
-    this.children[layerID][childID] = context
+    this.childLayers[layerID][childID] = context
     context.props.show === true 
       && ( this.layerController('visibility', { visible: true }, context) )
   }
   
+  updateLayer = layerID => this.layers[layerID] && this.layers[layerID].context.forceUpdate()
+  
   unmountChild = (layerID, childID, context) => {
-    delete this.children[layerID][childID]
-    if ( Object.keys(this.children[layerID]) === 0 ) { delete this.children[layerID] }
+    delete this.childLayers[layerID][childID]
+    if ( Object.keys(this.childLayers[layerID]) === 0 ) { delete this.childLayers[layerID] }
     context.props.show === true 
       && ( this.layerController('visibility', { visible: false }, context) )
   }
@@ -58,8 +64,8 @@ export default class PageLayerProvider extends Component {
     const layerID = context.props.layerID, 
           childID = context.props.childID
     if ( ! layerID || ! childID ) { throw new Error('Can Not Register a Child without both a Layer ID and Child ID') }
-    if ( ! this.children[layerID] ) { this.children[layerID] = {} }
-    const childContent =  this.children[layerID][childID]
+    if ( ! this.childLayers[layerID] ) { this.childLayers[layerID] = {} }
+    const childContent =  this.childLayers[layerID][childID]
     if ( state === 'mount' && childContent ) {
       throw new Error(`You may not register a child with the same layer and child ID more than once: Layer (${layerID}) Child (${childID})`)
     } else if ( state === 'mount' ) {
@@ -74,7 +80,7 @@ export default class PageLayerProvider extends Component {
   getLayersContent = (context) => {
     const id = context.props.layerID
     if ( Array.isArray(this.visibility[id]) && this.visibility[id].length > 0 ) {
-      const Children = this.visibility[id].map( childID => this.children[id][childID].props.children )
+      const Children = this.visibility[id].map( childID => this.childLayers[id][childID].props.children )
       return <div>{Children}</div>
     } else { return null }
   }
